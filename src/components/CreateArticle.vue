@@ -1,84 +1,94 @@
 <template>
-  <div class="news-article-form">
-    <h2>{{ articleId ? 'Update Article' : 'Create New Article' }}</h2>
+  <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <h2 class="text-3xl font-semibold text-center text-gray-800 mb-6">Create New Article</h2>
 
-    <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input
-            id="title"
-            type="text"
-            v-model="form.title"
-            placeholder="Enter article title"
-            required
-        />
+    <form @submit.prevent="createArticle">
+      <div class="space-y-4">
+        <!-- Title -->
+        <div class="form-group">
+          <label for="title" class="block text-gray-700 font-medium">Title</label>
+          <input
+              id="title"
+              type="text"
+              v-model="form.title"
+              placeholder="Enter article title"
+              class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              required
+          />
+        </div>
+
+        <!-- Content -->
+        <div class="form-group">
+          <label for="content" class="block text-gray-700 font-medium">Content</label>
+          <textarea
+              id="content"
+              v-model="form.content"
+              placeholder="Enter article content"
+              rows="5"
+              class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              required
+          ></textarea>
+        </div>
+
+        <!-- Image URL -->
+        <div class="form-group">
+          <label for="imageUrl" class="block text-gray-700 font-medium">Image URL</label>
+          <input
+              id="imageUrl"
+              type="text"
+              v-model="form.imageUrl"
+              placeholder="Enter image URL"
+              class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label for="categoryName" class="block text-gray-700 font-medium">Category</label>
+          <input
+              id="categoryName"
+              type="text"
+              v-model="form.categoryName"
+              placeholder="Enter category name"
+              class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              required
+          />
+        </div>
+
+        <!-- Published At -->
+        <div class="form-group">
+          <label for="publishedAt" class="block text-gray-700 font-medium">Published At</label>
+          <input
+              id="publishedAt"
+              type="datetime-local"
+              v-model="form.publishedAt"
+              class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group mt-6">
+          <button
+              type="submit"
+              class="w-full py-3 bg-blue-600 text-white font-bold text-lg rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Create Article
+          </button>
+        </div>
       </div>
-
-      <div class="form-group">
-        <label for="content">Content</label>
-        <textarea
-            id="content"
-            v-model="form.content"
-            placeholder="Enter article content"
-            rows="5"
-            required
-        ></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="imageUrl">Image URL</label>
-        <input
-            id="imageUrl"
-            type="text"
-            v-model="form.imageUrl"
-            placeholder="Enter image URL"
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="categoryName">Category</label>
-        <input
-            id="categoryName"
-            type="text"
-            v-model="form.categoryName"
-            placeholder="Enter category name"
-            required
-        />
-      </div>
-
-      <div class="form-group">
-        <label for="publishedAt">Published At</label>
-        <input
-            id="publishedAt"
-            type="datetime-local"
-            v-model="form.publishedAt"
-        />
-      </div>
-
-      <button type="submit">
-        {{ articleId ? 'Update Article' : 'Create Article' }}
-      </button>
     </form>
 
-    <p v-if="successMessage" class="success-message">{{ successMessage }}</p>
-    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+    <!-- Success or Error Message -->
+    <p v-if="successMessage" class="mt-4 text-center text-green-600">{{ successMessage }}</p>
+    <p v-if="errorMessage" class="mt-4 text-center text-red-600">{{ errorMessage }}</p>
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import {ref} from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
 
-// Props
-defineProps({
-  articleId: {
-    type: Number,
-    default: null, // Null indicates creating a new article
-  },
-});
-
-// State
 const form = ref({
   title: '',
   content: '',
@@ -86,138 +96,28 @@ const form = ref({
   categoryName: '',
   publishedAt: null,
 });
-
 const successMessage = ref('');
 const errorMessage = ref('');
 const router = useRouter();
 
-// Watch for articleId changes (useful if this component is reused)
-watch(
-    () => articleId,
-    (newId) => {
-      if (newId) {
-        fetchArticle(newId);
-      } else {
-        resetForm();
-      }
-    },
-    { immediate: true }
-);
-
-// Fetch article data if updating
-const fetchArticle = async (id) => {
+const createArticle = async () => {
   try {
-    const { data } = await axios.get(`/api/articles/${id}`);
+    await axios.post('http://localhost:8080/api/news/add', form.value);
+    successMessage.value = 'Article created successfully!';
     form.value = {
-      title: data.title,
-      content: data.content,
-      imageUrl: data.imageUrl,
-      categoryName: data.category.name,
-      publishedAt: data.publishedAt
-          ? new Date(data.publishedAt).toISOString().slice(0, 16)
-          : null, // Format for datetime-local
+      title: '',
+      content: '',
+      imageUrl: '',
+      categoryName: '',
+      publishedAt: null,
     };
+    setTimeout(() => router.push('/articles'), 2000);
   } catch (error) {
-    errorMessage.value = 'Failed to fetch article data.';
-    console.error(error);
-  }
-};
-
-// Reset form when creating a new article
-const resetForm = () => {
-  form.value = {
-    title: '',
-    content: '',
-    imageUrl: '',
-    categoryName: '',
-    publishedAt: null,
-  };
-};
-
-// Submit handler
-const handleSubmit = async () => {
-  try {
-    if (articleId) {
-      // Update existing article
-      await axios.put(`/api/articles/${articleId}`, form.value);
-      successMessage.value = 'Article updated successfully!';
-    } else {
-      // Create new article
-      await axios.post('/api/articles', form.value);
-      successMessage.value = 'Article created successfully!';
-      resetForm();
-    }
-
-    // Redirect or refresh (optional)
-    setTimeout(() => {
-      router.push('/articles'); // Adjust to your article list route
-    }, 2000);
-  } catch (error) {
-    errorMessage.value = 'Failed to submit article.';
-    console.error(error);
+    errorMessage.value = 'Failed to create article.';
   }
 };
 </script>
 
 <style scoped>
-.news-article-form {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #f9f9f9;
-}
-
-h2 {
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-input,
-textarea {
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-button {
-  display: block;
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #007bff;
-  color: white;
-  font-size: 1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-.success-message {
-  margin-top: 1rem;
-  color: green;
-  text-align: center;
-}
-
-.error-message {
-  margin-top: 1rem;
-  color: red;
-  text-align: center;
-}
+/* Additional custom styles can go here if needed */
 </style>
