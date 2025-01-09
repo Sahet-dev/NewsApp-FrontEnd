@@ -49,32 +49,43 @@
   </div>
 </template>
 
+
+
+
+
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import { useAuthStore } from '@/stores/authStore';
 
 const username = ref('');
 const password = ref('');
 const errorMessage = ref('');
+const authStore = useAuthStore();
+
+
 
 const handleSubmit = async () => {
   try {
-    const response = await axios.post('http://localhost:8080/login', {}, {
-      auth: {
-        username: username.value,
-        password: password.value
-      }
+    const response = await axios.post(
+        'http://localhost:8080/login',
+        // 'http://145.223.102.7:8080/login',
+
+        {
+      username: username.value,
+      password: password.value,
     });
-    const token = response.data.token;
-    localStorage.setItem('authToken', token);
-    console.log('Token:', token);
+
+    const { token, role } = response.data;
+
+    authStore.login(token, role);
   } catch (error) {
     errorMessage.value = 'Login failed. Please check your credentials and try again.';
     console.error(error);
   }
 };
+
+
 </script>
 
-<style scoped>
-/* Custom styles can be added here if needed */
-</style>
+

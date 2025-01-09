@@ -80,6 +80,7 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+import apiClient from "@/stores/apiClient.js";
 
 const name = ref('');
 const username = ref('');
@@ -90,13 +91,16 @@ const successMessage = ref('');
 
 const handleRegister = async () => {
   try {
-    const response = await axios.post('http://localhost:8080/register', {
+    const response = await axios.post(
+        'http://localhost:8080/register',
+        // 'http://145.223.102.7:8080/register',
+        {
       name: name.value,
       username: username.value,
       email: email.value,
       password: password.value,
     });
-    successMessage.value = 'Registration successful! You can now log in.';
+    successMessage.value = 'Registration successful! A confirmation email has been sent.';
     errorMessage.value = '';
     console.log('Registered User:', response.data);
   } catch (error) {
@@ -105,6 +109,7 @@ const handleRegister = async () => {
     console.error(error);
   }
 };
+
 </script>
 
 <style scoped>

@@ -1,13 +1,13 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
+    // baseURL: 'http://145.223.102.7:8080',
     baseURL: 'http://localhost:8080',
     headers: {
         'Content-Type': 'application/json'
     }
 });
 
-// Add a request interceptor to include the token
 apiClient.interceptors.request.use(config => {
     const token = localStorage.getItem('authToken');
     if (token) {

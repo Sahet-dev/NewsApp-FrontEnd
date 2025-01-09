@@ -1,22 +1,18 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import ArticleList from './../components/ArticleList.vue';
-import ArticleDetail from './../components/ArticleDetail.vue';
-import CreateArticle from './../components/CreateArticle.vue';
-import UpdateArticle from "@/components/UpdateArticle.vue";
-import UserArticlePage from "@/components/UserArticlePage.vue";
-import Login from "@/components/Auth/Login.vue";
-import Registration from "@/components/Auth/Registration.vue";
+import {createRouter, createWebHistory} from "vue-router";
+import {requireAdmin, requireAdminOrEditor} from "@/stores/guardRoutes.js";
 
 const routes = [
-  { path: '/', component: UserArticlePage },
-  { path: '/articles', component: ArticleList },
-  { path: '/login', component: Login },
-  { path: '/register', component: Registration },
-  { path: '/user-articles', component: UserArticlePage },
-  { path: '/articles/:id', component: ArticleDetail },
-  { path: '/articles/new', component: CreateArticle },
-  { path: '/articles/:id/edit', component: UpdateArticle, props: (route) => ({ articleId: parseInt(route.params.id) }), },
+  { path: '/', component: () => import('@/components/UserArticlePage.vue') },
+  { path: '/articles', component: () => import('@/components/ArticleList.vue') },
+  { path: '/login', component: () => import('@/components/Auth/Login.vue') },
+  { path: '/register', component: () => import('@/components/Auth/Registration.vue') },
+  { path: '/user-articles', component: () => import('@/components/UserArticlePage.vue') },
+  { path: '/articles/:id', component: () => import('@/components/ArticleDetail.vue') },
+  { path: '/articles/new', component: () => import('@/components/CreateArticle.vue'), beforeEnter: requireAdminOrEditor },
+  { path: '/articles/:id/edit', component: () => import('@/components/UpdateArticle.vue'), props: (route) => ({ articleId: parseInt(route.params.id) }), beforeEnter: requireAdminOrEditor },
+  { path: '/admin', component: () => import('@/components/AdminPage.vue'), beforeEnter: requireAdmin },
 ];
+
 
 const router = createRouter({
   history: createWebHistory(),

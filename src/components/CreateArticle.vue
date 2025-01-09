@@ -45,15 +45,22 @@
         <!-- Category -->
         <div class="form-group">
           <label for="categoryName" class="block text-gray-700 font-medium">Category</label>
-          <input
+          <select
               id="categoryName"
-              type="text"
               v-model="form.categoryName"
-              placeholder="Enter category name"
               class="mt-2 p-3 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
               required
-          />
+          >
+            <option value="" disabled selected>Select a category</option>
+            <option value="Technology">Technology</option>
+            <option value="Health">Health</option>
+            <option value="Sports">Sports</option>
+            <option value="Business">Business</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Entertainment">World</option>
+          </select>
         </div>
+
 
         <!-- Published At -->
         <div class="form-group">
@@ -88,6 +95,7 @@
 import {ref} from 'vue';
 import axios from 'axios';
 import {useRouter} from 'vue-router';
+import apiClient from "@/stores/apiClient.js";
 
 const form = ref({
   title: '',
@@ -102,7 +110,7 @@ const router = useRouter();
 
 const createArticle = async () => {
   try {
-    await axios.post('http://localhost:8080/api/news/add', form.value);
+    await apiClient.post('/admin/add', form.value);
     successMessage.value = 'Article created successfully!';
     form.value = {
       title: '',
@@ -118,6 +126,3 @@ const createArticle = async () => {
 };
 </script>
 
-<style scoped>
-/* Additional custom styles can go here if needed */
-</style>

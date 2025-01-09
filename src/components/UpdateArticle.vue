@@ -87,6 +87,7 @@ import { ref, watch, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
 import { useArticleStore } from '@/stores/articleStore';
+import apiClient from "@/stores/apiClient.js";
 
 const articleStore = useArticleStore();
 const route = useRoute();
@@ -130,7 +131,7 @@ const watchArticle = () => {
 
 const handleSubmit = async () => {
   try {
-    await axios.put(`/api/news/${route.params.id}`, form.value);
+    await apiClient.put(`admin/${route.params.id}`, form.value);
     successMessage.value = 'Article updated successfully!';
     setTimeout(() => {
       successMessage.value = '';
