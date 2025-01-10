@@ -68,8 +68,8 @@ const authStore = useAuthStore();
 const handleSubmit = async () => {
   try {
     const response = await axios.post(
-        'http://localhost:8080/login',
-        // 'http://145.223.102.7:8080/login',
+        // 'http://localhost:8080/login',
+        'http://145.223.102.7:8080/login',
 
         {
       username: username.value,

@@ -14,7 +14,8 @@
             </span>
           </div>
           <div class="text-gray-500">
-            {{ new Date(articleStore.article.publishedAt).toLocaleString() }}
+<!--            {{ new Date(articleStore.article.publishedAt).toLocaleString() }}-->
+            {{ formattedPublishedAt }}
           </div>
         </div>
       </div>
@@ -39,7 +40,6 @@
         </div>
       </div>
 
-      <!-- Footer Section -->
       <!-- Footer Section -->
       <div
           v-if="authStore.isLoggedIn && authStore.role === 'ADMIN'"
@@ -71,20 +71,74 @@
 </template>
 
 <script setup>
-import {onMounted, watch} from 'vue';
-import {useRoute} from 'vue-router';
-import {useArticleStore} from '@/stores/articleStore';
+import {onMounted, watch, ref, computed} from 'vue';
+import { useRoute } from 'vue-router';
+import { useArticleStore } from '@/stores/articleStore';
 import { useAuthStore } from '@/stores/authStore';
+import { formatDistanceToNow } from 'date-fns';
 
 const articleStore = useArticleStore();
 const authStore = useAuthStore();
 const route = useRoute();
 
-onMounted(() => {
-  articleStore.fetchArticle(route.params.id);
+const pageTitle = ref('Loading...');
+
+
+
+const formattedPublishedAt = computed(() => {
+  return articleStore.article?.publishedAt
+      ? formatDistanceToNow(new Date(articleStore.article.publishedAt), { addSuffix: true })
+      : '';
 });
 
-watch(() => route.params.id, (newId) => {
-  articleStore.fetchArticle(newId);
+
+
+
+
+
+
+//
+// const getTurkmenTimeAgo = (date) => {
+//   const diff = (Date.now() - new Date(date).getTime()) / 1000; // Difference in seconds
+//   const MINUTES = 60;
+//   const HOURS = 60 * MINUTES;
+//   const DAYS = 24 * HOURS;
+//   const YEARS = 365 * DAYS;
+//
+//   if (diff < MINUTES) return `${Math.floor(diff)} sekunt ozal`;
+//   if (diff < HOURS) return `${Math.floor(diff / MINUTES)} minut ozal`;
+//   if (diff < DAYS) return `${Math.floor(diff / HOURS)} sagat ozal`;
+//   if (diff < YEARS) return `${Math.floor(diff / DAYS)} gün ozal`;
+//   return `${Math.floor(diff / YEARS)} ýyl öň`;
+// };
+//
+// const formattedPublishedAt = computed(() => {
+//   return articleStore.article?.publishedAt
+//       ? getTurkmenTimeAgo(articleStore.article.publishedAt)
+//       : '';
+// });
+
+
+
+
+
+
+onMounted(() => {
+  fetchArticleAndSetTitle();
 });
+
+watch(() => route.params.id, () => {
+  fetchArticleAndSetTitle();
+});
+
+async function fetchArticleAndSetTitle() {
+  await articleStore.fetchArticle(route.params.id); // Fetch article data
+  if (articleStore.article?.title) {
+    pageTitle.value = articleStore.article.title;
+    document.title = `${articleStore.article.title} - Döwür. Dünýäde ýene nämeler täzelikler...`; // Update page title
+  } else {
+    document.title = 'Article Not Found - Döwür';
+  }
+}
 </script>
+

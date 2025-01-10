@@ -92,8 +92,8 @@ const successMessage = ref('');
 const handleRegister = async () => {
   try {
     const response = await axios.post(
-        'http://localhost:8080/register',
-        // 'http://145.223.102.7:8080/register',
+        // 'http://localhost:8080/register',
+        'http://145.223.102.7:8080/register',
         {
       name: name.value,
       username: username.value,

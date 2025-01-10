@@ -86,7 +86,7 @@
 import { ref, watch, onMounted } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router';
-import { useArticleStore } from '@/stores/articleStore';
+import { useArticleStore } from '@/stores/articleStore.js';
 import apiClient from "@/stores/apiClient.js";
 
 const articleStore = useArticleStore();

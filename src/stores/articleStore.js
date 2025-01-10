@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import apiClient from "@/stores/apiClient.js";
+import axios from "axios";
 
 export const useArticleStore = defineStore('articleStore', () => {
     const articles = ref([]);
@@ -9,7 +10,7 @@ export const useArticleStore = defineStore('articleStore', () => {
     const fetchArticles = async () => {
         if (articles.value.length > 0) return; // Avoid re-fetching
         try {
-            const { data } = await apiClient.get('/api/news/all');
+            const { data } = await axios.get('http://145.223.102.7:8080/api/news/all');
             articles.value = data;
         } catch (error) {
             console.error('Failed to fetch articles:', error);
@@ -18,7 +19,7 @@ export const useArticleStore = defineStore('articleStore', () => {
 
     const fetchArticle = async (id) => {
         try {
-            const { data } = await apiClient.get(`/api/news/${id}`);
+            const { data } = await axios.get(`http://145.223.102.7:8080/api/news/${id}`);
             article.value = data;
         } catch (error) {
             console.error('Failed to fetch article:', error);
