@@ -80,7 +80,8 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-import apiClient from "@/stores/apiClient.js";
+import router from "../../../../news-nuxt/pages/router/index.js";
+import { BASE_URL } from '@/stores/config.js';
 
 const name = ref('');
 const username = ref('');
@@ -92,8 +93,8 @@ const successMessage = ref('');
 const handleRegister = async () => {
   try {
     const response = await axios.post(
-        // 'http://localhost:8080/register',
-        'http://145.223.102.7:8080/register',
+        `${BASE_URL}/register`,
+
         {
       name: name.value,
       username: username.value,
@@ -103,6 +104,7 @@ const handleRegister = async () => {
     successMessage.value = 'Registration successful! A confirmation email has been sent.';
     errorMessage.value = '';
     console.log('Registered User:', response.data);
+    await router.push('/login');
   } catch (error) {
     errorMessage.value = 'Registration failed. Please try again.';
     successMessage.value = '';
